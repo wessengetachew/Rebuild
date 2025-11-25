@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Modular Lifting Rings v8.0</title>
+    <title>Multi-Modulus Modular Arithmetic Explorer</title>
     <style>
         * {
             margin: 0;
@@ -12,775 +12,970 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1f2e 0%, #2d3748 100%);
-            color: #e2e8f0;
-            min-height: 100vh;
-            transition: background 0.3s ease, color 0.3s ease;
-        }
-        
-        body.light-mode {
-            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
-            color: #2d3748;
-        }
-        
-        body.light-mode .app-header {
-            background: linear-gradient(135deg, #ffffff 0%, #f7fafc 100%);
-            border-bottom: 2px solid #e2e8f0;
-        }
-        
-        body.light-mode .control-panel,
-        body.light-mode .visualization-panel,
-        body.light-mode .analysis-panel {
-            background: rgba(255, 255, 255, 0.95);
-            border: 1px solid #e2e8f0;
-        }
-        
-        body.light-mode .section-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-        }
-        
-        body.light-mode h1,
-        body.light-mode h2,
-        body.light-mode h3 {
-            color: #2d3748;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
         }
 
-        .app-header {
-            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
-            padding: 20px 30px;
-            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .header-content {
-            max-width: 1800px;
-            margin: 0 auto;
+        #header {
+            background: #2a2a2a;
+            padding: 15px 20px;
+            border-bottom: 2px solid #3a3a3a;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .header-title h1 {
-            font-size: 1.8em;
+        h1 {
+            font-size: 24px;
             font-weight: 600;
-            color: #FFD700;
+        }
+
+        #mainContainer {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        #canvasContainer {
+            flex: 1;
+            position: relative;
+            background: #0a0a0a;
+            overflow: hidden;
+        }
+
+        #canvas {
+            cursor: crosshair;
+            display: block;
+        }
+
+        #controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(30, 30, 30, 0.95);
+            padding: 15px;
+            border-radius: 8px;
+            max-width: 300px;
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+            border: 1px solid #444;
+        }
+
+        #legend {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(30, 30, 30, 0.95);
+            padding: 15px;
+            border-radius: 8px;
+            max-width: 250px;
+            border: 1px solid #444;
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+
+        #zoomControls {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(30, 30, 30, 0.95);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            display: flex;
+            gap: 10px;
+        }
+
+        #detailsPanel {
+            background: #2a2a2a;
+            padding: 20px;
+            border-top: 2px solid #3a3a3a;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #3a3a3a;
+        }
+
+        .control-group:last-child {
+            border-bottom: none;
+        }
+
+        .control-group h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #4a9eff;
+            font-weight: 600;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 12px;
+            color: #b0b0b0;
+        }
+
+        input[type="number"], select {
+            width: 100%;
+            padding: 6px;
+            background: #1a1a1a;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: #e0e0e0;
+            font-size: 12px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            margin: 8px 0;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        button {
+            padding: 8px 16px;
+            background: #4a9eff;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #3a8eef;
+        }
+
+        button:active {
+            background: #2a7edf;
+        }
+
+        .btn-secondary {
+            background: #555;
+        }
+
+        .btn-secondary:hover {
+            background: #666;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 11px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            margin-right: 8px;
+            border: 1px solid #666;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .detail-item {
+            background: #1a1a1a;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #3a3a3a;
+        }
+
+        .detail-label {
+            font-size: 11px;
+            color: #888;
             margin-bottom: 4px;
         }
 
-        .header-title .subtitle {
-            font-size: 0.9em;
-            opacity: 0.8;
-            color: #cbd5e0;
+        .detail-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #4a9eff;
         }
 
-        .header-actions {
-            display: flex;
-            gap: 15px;
-            align-items: center;
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            pointer-events: none;
+            display: none;
+            border: 1px solid #4a9eff;
+            z-index: 1000;
         }
 
-        /* NEW/MODIFIED GRID LAYOUT */
-        .app-container {
-            max-width: 100%;
-            margin: 0 auto;
-            padding: 20px;
-            /* 3-column structure: Controls (300px), Visualization (Flexible), Analysis (350px) */
+        .preset-buttons {
             display: grid;
-            grid-template-columns: 300px minmax(600px, 1fr) 350px;
-            gap: 15px;
-            min-height: calc(100vh - 100px);
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+            margin-top: 10px;
         }
 
-        .control-panel {
-            grid-column: 1 / 2; /* Left Column */
-            background: rgba(45, 55, 72, 0.95);
-            border-radius: 12px;
-            padding: 0;
-            height: fit-content;
-            max-height: calc(100vh - 140px);
-            overflow-y: auto;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        .preset-btn {
+            padding: 6px;
+            font-size: 11px;
         }
-        
-        .visualization-panel {
-            grid-column: 2 / 3; /* Center Column */
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 12px;
-            padding: 20px;
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .inline-controls {
             display: flex;
-            flex-direction: column;
-            gap: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .analysis-panel {
-            grid-column: 3 / 4; /* Right Column */
-            background: rgba(45, 55, 72, 0.95);
-            border-radius: 12px;
-            padding: 0;
-            height: fit-content;
-            max-height: calc(100vh - 140px);
-            overflow-y: auto;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .panel-header {
-            position: sticky;
-            top: 0;
-            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
-            padding: 15px 20px;
-            border-bottom: 2px solid rgba(255, 215, 0, 0.2);
-            z-index: 10;
-        }
-
-        .panel-header h2 {
-            font-size: 1.2em;
-            font-weight: 600;
-            color: #FFD700;
-            margin: 0;
-        }
-
-        .panel-content {
-            padding: 15px;
-        }
-
-        .section-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            transition: all 0.2s ease;
-        }
-
-        .section-card:hover {
-            border-color: rgba(255, 215, 0, 0.3);
-            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.1);
-        }
-
-        .section-card h3 {
-            color: #cbd5e0;
-            margin-bottom: 12px;
-            font-size: 0.95em;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: flex;
+            gap: 10px;
             align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-            user-select: none;
+            margin-top: 5px;
         }
 
-        .section-card.collapsed .section-content {
-            display: none;
+        .inline-controls input[type="number"] {
+            width: 60px;
         }
-
-        .section-content {
-            margin-top: 12px;
-        }
-        
-        /* ... (rest of existing CSS) ... */
-
-        .tab-navigation {
-            display: flex;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 8px 8px 0 0;
-            overflow: hidden;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        .tab-button {
-            flex: 1;
-            padding: 12px 15px;
-            background: transparent;
-            border: none;
-            color: #cbd5e0;
-            cursor: pointer;
-            font-size: 0.9em;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            border-bottom: 3px solid transparent;
-        }
-
-        .tab-button:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: #FFD700;
-        }
-
-        .tab-button.active {
-            color: #FFD700;
-            border-bottom-color: #FFD700;
-            background: rgba(255, 215, 0, 0.1);
-        }
-
-        .tab-content {
-            display: none;
-            padding: 20px;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-        
-        .tab-content h3 {
-            font-size: 1.4em;
-            color: #4ECDC4;
-            margin-top: 0;
-            margin-bottom: 15px;
-            border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
-            padding-bottom: 5px;
-        }
-        
-        .tab-content h4 {
-            font-size: 1.1em;
-            color: #FFD700;
-            margin-top: 15px;
-            margin-bottom: 10px;
-        }
-        
-        .tab-content ul {
-            margin-left: 20px;
-            padding-left: 0;
-            list-style: disc;
-            font-size: 0.9em;
-        }
-        
-        .tab-content li {
-            margin-bottom: 8px;
-        }
-        
-        .tab-content p {
-            margin-bottom: 15px;
-            line-height: 1.5;
-            font-size: 0.95em;
-        }
-        
-        .math-notation {
-            font-family: 'Times New Roman', serif;
-            font-style: italic;
-            font-weight: bold;
-        }
-
-        @media (max-width: 1200px) {
-            .app-container {
-                /* Stack columns on smaller screens */
-                grid-template-columns: 1fr;
-            }
-            
-            #canvas {
-                width: 100%;
-                max-width: 90vw;
-                height: auto;
-            }
-            
-            .control-panel, .analysis-panel {
-                max-height: none; /* Remove height constraints when stacked */
-            }
-        }
-        
-        /* ... (rest of existing CSS, keeping all of it) ... */
     </style>
 </head>
 <body>
-    
-    <div class="theme-toggle" onclick="toggleTheme()">
-        <span id="themeIcon">🌙</span>
-        <span id="themeText">Dark Mode</span>
+    <div id="header">
+        <h1>Multi-Modulus Modular Arithmetic Explorer</h1>
+        <button onclick="exportVisualization()">Export High-Res (4K)</button>
     </div>
-    
-    <div class="keyboard-shortcuts" id="keyboardShortcuts">
-        <h4>⌨️ Keyboard Shortcuts</h4>
-        <div><kbd>?</kbd> Toggle this help</div>
-        <div><kbd>T</kbd> Toggle theme</div>
-        <div><kbd>R</kbd> Toggle rotation</div>
-        <div><kbd>L</kbd> Toggle labels</div>
-        <div><kbd>Space</kbd> Start/Stop animation</div>
-        <div><kbd>←→</kbd> Adjust rotation</div>
-        <div><kbd>↑↓</kbd> Adjust zoom</div>
-        <div><kbd>Esc</kbd> Reset view</div>
-        <div><kbd>S</kbd> Take screenshot</div>
-        <div><kbd>1-8</kbd> Quick gap selection</div>
+
+    <div id="mainContainer">
+        <div id="canvasContainer">
+            <canvas id="canvas"></canvas>
+            
+            <div id="controls">
+                <div class="control-group">
+                    <h3>Multi-Modulus Configuration</h3>
+                    <label>
+                        <input type="checkbox" id="multiModusEnabled" checked> Enable Multi-Modulus Mode
+                    </label>
+                    <label>Mode Type:</label>
+                    <select id="modeType">
+                        <option value="consecutive">Consecutive (1 to n)</option>
+                        <option value="composite">Composite Only</option>
+                        <option value="primes">Primes Only</option>
+                    </select>
+                    <div class="inline-controls">
+                        <div style="flex: 1;">
+                            <label>Start:</label>
+                            <input type="number" id="startM" value="1" min="1" max="200">
+                        </div>
+                        <div style="flex: 1;">
+                            <label>End:</label>
+                            <input type="number" id="endM" value="30" min="1" max="200">
+                        </div>
+                    </div>
+                    <div class="preset-buttons">
+                        <button class="preset-btn" onclick="setPreset('first12')">First 12</button>
+                        <button class="preset-btn" onclick="setPreset('first30')">First 30</button>
+                        <button class="preset-btn" onclick="setPreset('first60')">First 60</button>
+                        <button class="preset-btn" onclick="setPreset('twin')">Twin Range</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>Connection Types</h3>
+                    <label>
+                        <input type="checkbox" id="showRtoR" checked> r-to-r Connections (Vertical)
+                    </label>
+                    <label>
+                        <input type="checkbox" id="showRtoRplusM"> r-to-r+M Connections (Modular)
+                    </label>
+                    <label>
+                        <input type="checkbox" id="showGapConnections"> r-to-r+2n Gaps (Within Ring)
+                    </label>
+                    <div id="gapControls">
+                        <label>Gap Size (n): <span id="gapValue">1</span> → Connects r to r+<span id="actualGap">2</span></label>
+                        <input type="range" id="gapSize" min="1" max="20" value="1">
+                        <div class="preset-buttons">
+                            <button class="preset-btn" onclick="setGap(1)">Twin (n=1)</button>
+                            <button class="preset-btn" onclick="setGap(2)">Cousin (n=2)</button>
+                            <button class="preset-btn" onclick="setGap(3)">Sexy (n=3)</button>
+                            <button class="preset-btn" onclick="setGap(4)">Gap-8 (n=4)</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>Point Labeling</h3>
+                    <label>
+                        <input type="checkbox" id="showLabels"> Show Labels
+                    </label>
+                    <label>Label Mode:</label>
+                    <select id="labelMode">
+                        <option value="residue">Residue (r)</option>
+                        <option value="fraction">Fraction (r/M)</option>
+                        <option value="gcd">GCD Value</option>
+                        <option value="channel">Channel (M')</option>
+                        <option value="degrees">Angle (degrees)</option>
+                        <option value="radians">Angle (radians)</option>
+                        <option value="formula">Formula (2πr/M)</option>
+                        <option value="position">Position (r, M)</option>
+                    </select>
+                    <label>
+                        <input type="checkbox" id="coprimeOnly"> Coprime Only
+                    </label>
+                </div>
+
+                <div class="control-group">
+                    <h3>Visual Settings</h3>
+                    <label>Color Scheme:</label>
+                    <select id="colorScheme">
+                        <option value="coprime">Coprime/Non-Coprime</option>
+                        <option value="gcd">By GCD Value</option>
+                        <option value="modulus">By Modulus</option>
+                        <option value="rainbow">Rainbow</option>
+                    </select>
+                    <label>Point Size:</label>
+                    <input type="range" id="pointSize" min="2" max="10" value="4">
+                </div>
+
+                <button onclick="render()" style="width: 100%; margin-top: 10px;">Update Visualization</button>
+            </div>
+
+            <div id="legend">
+                <h3 style="margin-bottom: 10px; font-size: 14px;">Legend</h3>
+                <div id="legendContent"></div>
+            </div>
+
+            <div id="zoomControls">
+                <button onclick="zoomIn()">Zoom In (+)</button>
+                <button onclick="zoomOut()">Zoom Out (-)</button>
+                <button onclick="resetView()">Reset View</button>
+            </div>
+
+            <div class="tooltip" id="tooltip"></div>
+        </div>
     </div>
-    
-    <div class="hover-tooltip" id="hoverTooltip">
-        <h5 id="tooltipTitle">Residue Info</h5>
-        <div id="tooltipContent"></div>
+
+    <div id="detailsPanel">
+        <h3 style="margin-bottom: 15px; font-size: 16px;">Current Parameters & Statistics</h3>
+        <div class="details-grid" id="detailsGrid"></div>
     </div>
-    <header class="app-header">
-        <div class="header-content">
-            <div class="header-title">
-                <h1>Riemann Hypothesis Explorer</h1>
-                <div class="subtitle">Interactive Modular Rings & Complex Analysis Visualization<br>
-                <em class="math-notation">Exploring ζ(s), L(s,χ), and Prime Distribution through Geometric Patterns</em></div>
-            </div>
-            <div class="header-actions">
-                </div>
-        </div>
-    </header>
 
-    <div class="app-container">
+    <script>
+        // Canvas and rendering state
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let scale = 1;
+        let offsetX = 0;
+        let offsetY = 0;
+        let isDragging = false;
+        let lastX = 0;
+        let lastY = 0;
 
-        <div class="control-panel">
-            <div class="panel-header"><h2>Visualization Controls</h2></div>
-            <div class="panel-content">
-                <div class="control-section" style="background: linear-gradient(45deg, rgba(78, 205, 196, 0.15), rgba(138, 43, 226, 0.15)); border: 2px solid rgba(78, 205, 196, 0.4);">
-                    <h3 onclick="toggleSection('layoutSection')" style="cursor: pointer; user-select: none; color: #4ECDC4;">
-                        <span class="collapse-icon collapsed" id="layoutSectionIcon">▶</span>
-                        Coordinate System Layout
-                    </h3>
-                    <div id="layoutSection" class="collapsible-section collapsed">
-                    
-                    <div class="slider-group">
-                        <label><strong>Coordinate System:</strong></label>
-                        <select id="coordinateSystem" onchange="updateCoordinateSystem()" style="width: 100%; padding: 8px; border-radius: 6px; font-size: 13px;">
-                            <option value="polar" selected>Polar/Concentric (default)</option>
-                            <option value="log-cylinder">Log-Cylinder (u=ln m, v=θ)</option>
-                            <option value="spiral">Logarithmic Spiral</option>
-                            <option value="hyperbolic">Hyperbolic (Poincaré disk)</option>
-                            <option value="rectangular">Rectangular Grid</option>
-                            <option value="treemap">Treemap/Packing</option>
-                            <option value="voronoi">Voronoi Tessellation</option>
-                            <option value="fractal">Fractal Self-Similar</option>
-                        </select>
-                    </div>
-                    
-                    <div id="coordinateParams" style="margin-top: 15px;">
-                        </div>
-                    
-                    <div style="font-size: 0.85em; opacity: 0.9; margin-top: 10px; padding: 10px; background: rgba(78, 205, 196, 0.1); border-radius: 6px; border-left: 3px solid #4ECDC4;">
-                        <strong>Current System:</strong><br>
-                        <span id="coordSystemDesc">Traditional polar coordinates with concentric rings</span>
-                    </div>
-                    
-                    </div>
-                </div>
-                <div class="control-section">
-                    <h3 onclick="toggleSection('globalScaleSection')" style="cursor: pointer; user-select: none;">
-                        <span class="collapse-icon collapsed" id="globalScaleSectionIcon">▶</span>
-                        Global Scale Control
-                    </h3>
-                    <div id="globalScaleSection" class="collapsible-section collapsed">
-                        <div class="slider-group">
-                            <label>Global Visual Scale: <span id="globalScaleValue">1.0</span>x</label>
-                            <input type="range" id="globalScale" min="0.3" max="3.0" step="0.1" value="1.0" oninput="updateGlobalScale()">
-                        </div>
-                        <div style="font-size: 0.85em; opacity: 0.9; margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 6px;">
-                            <strong>Scales entire system:</strong><br>
-                            • Ring radii and spacing<br>
-                            • Point sizes and line thickness<br>
-                            • Labels and annotations<br>
-                            • Prime-phase field vectors<br>
-                            Use for better visibility or to fit more rings on screen
-                        </div>
-                    </div>
-                </div>
+        // Data structures
+        let points = [];
+        let connections = [];
+        let currentStats = {};
 
-                <div class="control-section rh-section">
-                    <h3 onclick="toggleSection('rhSection')" style="cursor: pointer; user-select: none;">
-                        <span class="collapse-icon collapsed" id="rhSectionIcon">▶</span>
-                        Riemann Hypothesis Research Hub
-                    </h3>
-                    <div id="rhSection" class="collapsible-section collapsed">
-                    
-                    
-                    <div class="custom-gap" style="background: linear-gradient(45deg, rgba(255, 215, 0, 0.15), rgba(72, 187, 120, 0.15)); border: 2px solid rgba(255, 215, 0, 0.3); margin-top: 15px;">
-                        <label><strong>Zero-Residue Alignment Diagnostics:</strong></label>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="enableZeroAlignment" onchange="toggleZeroAlignment()"> Enable Alignment Analysis
-                        </div>
-                        
-                        <div id="zeroAlignmentControls" style="display: none; margin-top: 10px;">
-                            <div class="slider-group">
-                                <label>Height t (imaginary part): <span id="alignmentTValue">14.134</span></label>
-                                <input type="range" id="alignmentT" min="0" max="100" step="0.5" value="14.134" oninput="updateAlignmentT()">
-                            </div>
-                            
-                            <div class="slider-group">
-                                <label>Prime Cutoff X: <span id="alignmentXValue">1000</span></label>
-                                <input type="range" id="alignmentX" min="100" max="10000" step="100" value="1000" oninput="updateAlignmentX()">
-                            </div>
-                            
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="showPrimePhaseVectors" checked onchange="updateZeroAlignment()"> Show Prime-Phase Vectors P_t(M,r)
-                            </div>
-                            
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="showCoherenceScore" checked onchange="updateZeroAlignment()"> Show Coherence Score (C_t)
-                            </div>
-                            
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="showRandomBaseline" onchange="updateZeroAlignment()"> Show Random Baseline
-                            </div>
-                            
-                            <button onclick="copyAlignmentData()" class="rh-btn" style="width: 100%; margin-top: 10px;">Copy Zero Alignment Data</button>
-                        </div>
-                    </div>
-
-                    <div class="rh-notice">
-                        The visual alignment of residues to the complex phase $\text{arg}(\zeta(1/2+it))$ is a heuristic for exploring the distribution of primes and their multiplicative structure.
-                    </div>
-                    
-                    </div>
-                </div>
-
-                <div class="control-section">
-                    <h3 onclick="toggleSection('ringControlsSection')">
-                        <span class="collapse-icon" id="ringControlsSectionIcon">▶</span>
-                        Ring Modulus Selection (M1-M60)
-                    </h3>
-                    <div id="ringControlsSection" class="collapsible-section collapsed">
-                        <div id="ringControls" class="checkbox-group">
-                            </div>
-                        <div class="gap-input" style="margin-top: 15px;">
-                            <button onclick="selectAllRings()">Select All</button>
-                            <button onclick="deselectAllRings()" class="reset-btn">Deselect All</button>
-                            <button onclick="selectPrimeModuli()" class="special-btn">Primes Only</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="control-section">
-                    <h3 onclick="toggleSection('gapControlsSection')">
-                        <span class="collapse-icon" id="gapControlsSectionIcon">▶</span>
-                        Gap Selection (Zero Divisor Exclusion)
-                    </h3>
-                    <div id="gapControlsSection" class="collapsible-section collapsed">
-                        <div class="checkbox-group" id="gapControls">
-                            </div>
-                        <div class="custom-gap">
-                            <label><strong>Custom Gap/Filter:</strong></label>
-                            <div class="gap-input">
-                                <input type="number" id="customGapInput" placeholder="e.g., 7" min="2" max="1000" value="7">
-                                <button onclick="addCustomGap()">Add/Toggle Gap</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="control-section">
-                    <h3 onclick="toggleSection('radiusScaleSection')">
-                        <span class="collapse-icon" id="radiusScaleSectionIcon">▶</span>
-                        Radius Scaling Mode
-                    </h3>
-                    <div id="radiusScaleSection" class="collapsible-section collapsed">
-                        <div class="slider-group">
-                            <label><strong>Radius Scaling:</strong></label>
-                            <select id="radiusScaling" onchange="updateRadiusScaling()">
-                                <option value="uniform" selected>Uniform Spacing</option>
-                                <option value="linear">Linear: r(M) = c·M</option>
-                                <option value="sqrt">Square-root: r(M) = c·√M</option>
-                                <option value="log">Logarithmic: r(M) = c·log(M+1)</option>
-                                <option value="totient">Totient: r(M) = c·φ(M)</option>
-                                <option value="density">Density: r(M) = c·φ(M)/M</option>
-                                <option value="inverse">Inverse: r(M) = c/M</option>
-                                <option value="exponential">Exponential: r(M) = c·aᵐ</option>
-                            </select>
-                        </div>
-                        
-                        <div class="slider-group" id="scalingConstGroup">
-                            <label>Scaling Constant $c$: <span id="scalingConstValue">1.0</span></label>
-                            <input type="range" id="scalingConst" min="0.1" max="5.0" step="0.1" value="1.0" oninput="updateScalingConst()">
-                        </div>
-
-                        <div class="slider-group" id="expBaseGroup" style="display: none;">
-                            <label>Exponential Base $a$: <span id="expBaseValue">1.05</span></label>
-                            <input type="range" id="expBase" min="1.01" max="1.2" step="0.01" value="1.05" oninput="updateExpBase()">
-                        </div>
-                        
-                        <div style="font-size: 0.85em; opacity: 0.9; margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 6px;">
-                            <strong>Mode Description:</strong><br>
-                            <span id="scalingDescription">Uniform spacing places rings at equal intervals regardless of modulus value. Best for visualizing all rings equally.</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="control-section">
-                    <h3 onclick="toggleSection('coloringSection')">
-                        <span class="collapse-icon" id="coloringSectionIcon">▶</span>
-                        Color & Aesthetics
-                    </h3>
-                    <div id="coloringSection" class="collapsible-section collapsed">
-                        <div class="slider-group">
-                            <label><strong>Coloring Mode:</strong></label>
-                            <select id="coloringMode" onchange="draw()">
-                                <option value="angular" selected>Angular (Default)</option>
-                                <option value="magnitude">Magnitude/Radius</option>
-                                <option value="modulus">Modulus Index</option>
-                                <option value="residue_index">Residue Index</option>
-                                <option value="prime_factor">Prime Factor Count</option>
-                                <option value="gcd_spectrum">GCD Spectrum</option>
-                                <option value="custom">Custom Color</option>
-                            </select>
-                        </div>
-                        
-                        <div class="slider-group">
-                            <label><strong>Color Palette:</strong></label>
-                            <div class="color-palette-selector">
-                                <div class="palette-option rainbow active" data-palette="rainbow" onclick="setPalette('rainbow')"></div>
-                                <div class="palette-option ocean" data-palette="ocean" onclick="setPalette('ocean')"></div>
-                                <div class="palette-option sunset" data-palette="sunset" onclick="setPalette('sunset')"></div>
-                                <div class="palette-option matrix" data-palette="matrix" onclick="setPalette('matrix')"></div>
-                                <div class="palette-option fire" data-palette="fire" onclick="setPalette('fire')"></div>
-                                <div class="palette-option ice" data-palette="ice" onclick="setPalette('ice')"></div>
-                                <div class="palette-option purple" data-palette="purple" onclick="setPalette('purple')"></div>
-                                <div class="palette-option earth" data-palette="earth" onclick="setPalette('earth')"></div>
-                            </div>
-                        </div>
-
-                        <div class="slider-group">
-                            <label>Background Opacity: <span id="bgOpacityValue">0.4</span></label>
-                            <input type="range" id="bgOpacity" min="0.0" max="1.0" step="0.05" value="0.4" oninput="updateBgOpacity()">
-                        </div>
-
-                        <div class="slider-group">
-                            <label>Non-Coprime Color (for $\gcd(r,M) > 1$):</label>
-                            <input type="color" id="nonGcdColor" value="#505050" onchange="draw()">
-                        </div>
-                        
-                        <div class="slider-group">
-                            <label>Custom Color:</label>
-                            <input type="color" id="customColor" value="#4ECDC4" onchange="draw()">
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="control-section">
-                    <h3 onclick="toggleSection('animationSection')">
-                        <span class="collapse-icon" id="animationSectionIcon">▶</span>
-                        Animation & Performance
-                    </h3>
-                    <div id="animationSection" class="collapsible-section collapsed">
-                        <div class="slider-group">
-                            <label>Animation Speed: <span id="animSpeedValue">1.0</span>x</label>
-                            <input type="range" id="animSpeed" min="0.0" max="5.0" step="0.1" value="1.0" oninput="updateAnimationSpeed()">
-                        </div>
-                        
-                        <div class="slider-group">
-                            <label>Render Resolution:</label>
-                            <select id="animResolution" onchange="draw()">
-                                <option value="high">High (1080p)</option>
-                                <option value="medium" selected>Medium (720p)</option>
-                                <option value="low">Low (480p)</option>
-                                <option value="custom">Custom</option>
-                            </select>
-                        </div>
-                        
-                        <div id="customResolutionControls" style="display: none; margin-top: 10px;">
-                            <label>Custom Width:</label>
-                            <input type="number" id="customWidth" value="1280" style="width: 100%; padding: 8px; border-radius: 6px;">
-                            <label style="margin-top: 10px; display: block;">Custom Height:</label>
-                            <input type="number" id="customHeight" value="720" style="width: 100%; padding: 8px; border-radius: 6px;">
-                            <button onclick="draw()" style="width: 100%; margin-top: 10px;">Apply Custom Resolution</button>
-                        </div>
-                        
-                        <div class="gap-input" style="margin-top: 15px;">
-                            <button onclick="toggleAnimation()">Toggle Animation (Space)</button>
-                            <button onclick="resetAnimation()" class="reset-btn">Reset Animation</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="control-section">
-                    <h3 onclick="toggleSection('debugSection')">
-                        <span class="collapse-icon" id="debugSectionIcon">▶</span>
-                        Debugging & Utilities
-                    </h3>
-                    <div id="debugSection" class="collapsible-section collapsed">
-                        <div class="gap-input">
-                            <button onclick="toggleDistanceMeasurement()" id="distanceToggleBtn">Start Distance Measurement</button>
-                            <button onclick="takeScreenshot()">Screenshot (S)</button>
-                        </div>
-                        <div class="slider-group">
-                            <label>Max Rings to Render: <span id="maxRingsValue">60</span></label>
-                            <input type="range" id="maxRings" min="10" max="100" step="1" value="60" oninput="updateMaxRings()">
-                        </div>
-                        <div class="slider-group">
-                            <label>Point Size: <span id="pointSizeValue">100</span>%</label>
-                            <input type="range" id="pointSize" min="10" max="200" step="10" value="100" oninput="updatePointSize()">
-                        </div>
-                        <div class="gap-input">
-                            <button onclick="downloadRingData()" class="special-btn">Download Ring Data (.txt)</button>
-                        </div>
-                        <div id="distanceDisplay" style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 6px; font-size: 0.85em; display: none;">
-                            </div>
-                    </div>
-                </div>
-
-                </div>
-        </div>
-
-        <div class="visualization-panel">
-            <div class="canvas-wrapper">
-                <canvas id="canvas"></canvas>
-                <div class="distance-overlay" id="distanceOverlay"></div>
-                <div class="validation-status" id="validationStatus" style="display: none;">RH SUPPORT VALIDATED</div>
-                <div class="animation-status" id="animationStatus">System Initializing...</div>
-            </div>
-            
-            <div class="rh-visualization-section">
-                <h3>Visualization Tools</h3>
-                <div class="rh-visual-grid">
-                    <div class="critical-line-display">
-                        <div class="slider-group">
-                            <label>Zoom: <span id="zoomValue">1.0</span>x</label>
-                            <input type="range" id="zoomSlider" min="0.5" max="5.0" step="0.05" value="1.0" oninput="updateZoom()">
-                        </div>
-                        <div class="slider-group">
-                            <label>Rotation: <span id="rotationValue">0</span>°</label>
-                            <input type="range" id="rotationSlider" min="0" max="360" step="1" value="0" oninput="updateRotation()">
-                        </div>
-                        <div class="gap-input">
-                            <button onclick="toggleLabels()">Toggle Labels (L)</button>
-                            <button onclick="resetView()" class="reset-btn">Reset View (Esc)</button>
-                        </div>
-                    </div>
-
-                    <div class="character-support-display">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="showLifts" checked onchange="draw()"> Show Modular Lifts (Hierarchy)
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="showUnitCircle" checked onchange="draw()"> Show Unit Circle (M=1)
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="showRingLabels" onchange="draw()"> Show Ring Moduli Labels
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="showResidueMarkers" onchange="draw()"> Show Residue Markers
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="analysis-panel">
-            <div class="tab-navigation">
-                <button class="tab-button active" onclick="openTab(event, 'Theory')">Mathematical Theory</button>
-                <button class="tab-button" onclick="openTab(event, 'Analysis')">Visualization Analysis</button>
-            </div>
-            
-            <div id="Theory" class="tab-content active">
-                <h3>The Modular Ring $\mathbb{Z}/n\mathbb{Z}$</h3>
-                <p>The core structure is the **Ring of Integers Modulo $n$**, denoted $\mathbb{Z}/n\mathbb{Z}$, where $n$ is the modulus ($M$) selected in the control panel.</p>
-                <ul>
-                    <li>**Elements:** The set of integers $\{0, 1, 2, \dots, n-1\}$. The visualization maps these residues to angular positions on a circle, with $r$ mapping to angle $2\pi r / n$.</li>
-                    <li>**Multiplicative Group (Units):** The most crucial subset is the group of units, $(\mathbb{Z}/n\mathbb{Z})^\times$, consisting of all residues $r$ that are **coprime** to $n$, i.e., $\gcd(r, n) = 1$. These points form the main symmetric patterns.</li>
-                    <li>**Euler's Totient Function $\phi(n)$:** This function counts the number of units in $\mathbb{Z}/n\mathbb{Z}$. The size of the primary pattern on Ring $M$ is $\phi(M)$. </li>
-                </ul>
-                
-                <h4>Gaps and Zero Divisors</h4>
-                <p>Selecting a **Gap $g$** (e.g., Gap 2 excludes all even $r$) filters out elements $r$ where $\gcd(r, g) \ne 1$. When $\gcd(r, M) > 1$, the residue $r$ is a **zero divisor**, which lacks a multiplicative inverse. These points are usually rendered differently to highlight the ring's algebraic structure.</p>
-                
-                <h4>Modular Lifting and Hierarchy</h4>
-                <p>Modular lifting is the process of mapping a residue $r \pmod{M_1}$ to a compatible residue $r' \pmod{M_2}$ where $M_1$ divides $M_2$. In the visualization, **Direct Lifts** show connections between points that maintain a fixed residue class under the modulus change, revealing the hierarchical structure of the family of rings $\mathbb{Z}/n\mathbb{Z}$.</p>
-                
-                <h4>Radius Scaling Modes</h4>
-                <p>The radial position of Ring $M$ is determined by the selected scaling mode. This choice determines which mathematical property is emphasized by distance:</p>
-                <ul>
-                    <li>**Density Scaling:** $r(M) = c \cdot \frac{\phi(M)}{M}$. Rings with a higher density of units (a proxy for primality) are positioned farther out, highlighting the probabilistic distribution of primes.</li>
-                    <li>**Logarithmic:** $r(M) = c \cdot \log(M+1)$. This compacts larger moduli, mimicking how integers are spaced on the complex plane's real axis in number theory.</li>
-                </ul>
-            </div>
-            
-            <div id="Analysis" class="tab-content">
-                <h3>Connection to Zeta and L-Functions</h3>
-                <p>The **Riemann Hypothesis Research Hub** links the geometric patterns to the theory of the Riemann Zeta function $\zeta(s)$ and Dirichlet $L$-functions $L(s, \chi)$.</p>
-                <ul>
-                    <li>**Dirichlet Characters:** The patterns visualized are often a geometric representation of the $\text{Dirichlet characters}$ $\chi$ modulo $M$, which are homomorphisms from the multiplicative group $(\mathbb{Z}/M\mathbb{Z})^\times$ to the unit circle in the complex plane.</li>
-                    <li>**Zero-Residue Alignment:** The alignment diagnostics check for the **coherence** of prime-phase vectors $P_t(M, r)$ at a specific height $t$ on the $\text{Critical Line}$ ($\text{Re}(s) = 1/2$). The $L$-functions have their non-trivial zeros on this line (conjectured by RH). </li>
-                </ul>
-                
-                <h4>Angular Coloring and Complex Phase</h4>
-                <p>The **Angular Coloring** scheme maps the complex argument (phase angle $\theta$) of a complex value $z = x+iy$ to color. For a unit residue $r$, the color reflects the phase of its associated complex number, which can represent $\chi(r)$ or a value related to the **Prime Number Theorem** residue distribution, providing insight into the $\text{modulus}$'s contribution to an $L$-function.</p>
-                
-                <h4>Pattern Symmetry and Group Theory</h4>
-                <p>The observed symmetries (e.g., $M=5$ forming a star) are a direct result of the **group structure** of $(\mathbb{Z}/M\mathbb{Z})^\times$. The number of "arms" or rotational symmetry is determined by the order of the elements and the number of generators in the group, which are often cyclic for prime moduli.</p>
-            </div>
-        </div>
-
-    </div> <script>
-        // NOTE: The vast majority of the original JavaScript (variable declarations, draw function,
-        // initialization logic, event handlers, etc.) is omitted here for brevity but should
-        // be included in your final file. The new functions below must be APPENDED to your
-        // existing script logic.
-
-        // ... [EXISTING JAVASCRIPT CODE GOES HERE] ...
-        
-        /* =========================================================================
-           NEW JAVASCRIPT FUNCTIONS FOR THE MATHEMATICAL LAYOUT
-           ========================================================================= */
-
-        /**
-         * Toggles between the Mathematical Theory and Visualization Analysis tabs.
-         * @param {Event} evt - The click event.
-         * @param {string} tabName - The ID of the tab content to show ('Theory' or 'Analysis').
-         */
-        function openTab(evt, tabName) {
-            var i, tabcontent, tablinks;
-            tabcontent = document.getElementsByClassName("tab-content");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
-            }
-            tablinks = document.getElementsByClassName("tab-button");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
-            }
-            document.getElementById(tabName).style.display = "block";
-            evt.currentTarget.className += " active";
+        // Resize canvas
+        function resizeCanvas() {
+            const container = document.getElementById('canvasContainer');
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            render();
         }
-        
-        /**
-         * Toggles the collapse state of a control section.
-         * @param {string} sectionId - The ID of the collapsible section container.
-         */
-        function toggleSection(sectionId) {
-            const section = document.getElementById(sectionId);
-            const icon = document.getElementById(sectionId + 'Icon');
-            
-            if (section.classList.contains('collapsed')) {
-                section.classList.remove('collapsed');
-                icon.textContent = '▼'; // Down arrow
-            } else {
-                section.classList.add('collapsed');
-                icon.textContent = '▶'; // Right arrow
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Prime checking
+        function isPrime(n) {
+            if (n < 2) return false;
+            if (n === 2) return true;
+            if (n % 2 === 0) return false;
+            for (let i = 3; i <= Math.sqrt(n); i += 2) {
+                if (n % i === 0) return false;
             }
+            return true;
         }
-        
-        // This initialization is crucial for the new layout to work on load
-        document.addEventListener('DOMContentLoaded', () => {
-            // Check if the tabs exist before trying to activate
-            if(document.querySelector('.tab-button')) {
-                openTab({currentTarget: document.querySelector('.tab-button.active')}, 'Theory');
+
+        // GCD calculation
+        function gcd(a, b) {
+            while (b !== 0) {
+                let temp = b;
+                b = a % b;
+                a = temp;
             }
-            
-            // Collapse sections by default (except for the ones that should be open)
-            const sections = document.querySelectorAll('.collapsible-section');
-            sections.forEach(s => {
-                if (!s.classList.contains('active')) { // Keep existing logic for initial state
-                    s.classList.add('collapsed');
-                    const icon = document.getElementById(s.id + 'Icon');
-                    if (icon) icon.textContent = '▶';
+            return a;
+        }
+
+        // Euler's totient function
+        function eulerTotient(n) {
+            let result = n;
+            for (let p = 2; p * p <= n; p++) {
+                if (n % p === 0) {
+                    while (n % p === 0) n /= p;
+                    result -= result / p;
+                }
+            }
+            if (n > 1) result -= result / n;
+            return Math.round(result);
+        }
+
+        // Get moduli based on configuration
+        function getModuli() {
+            const start = parseInt(document.getElementById('startM').value);
+            const end = parseInt(document.getElementById('endM').value);
+            const mode = document.getElementById('modeType').value;
+            const moduli = [];
+
+            for (let m = start; m <= end; m++) {
+                if (mode === 'consecutive') {
+                    moduli.push(m);
+                } else if (mode === 'composite' && !isPrime(m) && m > 1) {
+                    moduli.push(m);
+                } else if (mode === 'primes' && isPrime(m)) {
+                    moduli.push(m);
+                }
+            }
+
+            return moduli;
+        }
+
+        // Generate points
+        function generatePoints() {
+            points = [];
+            const moduli = getModuli();
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const maxRadius = Math.min(canvas.width, canvas.height) * 0.4;
+            const radiusStep = maxRadius / (moduli.length + 1);
+
+            moduli.forEach((M, ringIndex) => {
+                const radius = radiusStep * (ringIndex + 1);
+                
+                for (let r = 0; r < M; r++) {
+                    const angle = (2 * Math.PI * r) / M - Math.PI / 2;
+                    const x = centerX + radius * Math.cos(angle);
+                    const y = centerY + radius * Math.sin(angle);
+                    const g = gcd(r, M);
+                    const isCoprime = g === 1;
+                    const channel = M / g;
+
+                    points.push({
+                        x, y, r, M, g, isCoprime, channel, angle, radius, ringIndex
+                    });
                 }
             });
+        }
+
+        // Generate connections
+        function generateConnections() {
+            connections = [];
+            const moduli = getModuli();
+
+            // r-to-r connections
+            if (document.getElementById('showRtoR').checked) {
+                for (let i = 0; i < moduli.length - 1; i++) {
+                    const M1 = moduli[i];
+                    const M2 = moduli[i + 1];
+                    
+                    for (let r = 0; r < Math.min(M1, M2); r++) {
+                        const p1 = points.find(p => p.M === M1 && p.r === r);
+                        const p2 = points.find(p => p.M === M2 && p.r === r);
+                        
+                        if (p1 && p2 && p1.isCoprime && p2.isCoprime) {
+                            connections.push({ p1, p2, type: 'rtor' });
+                        }
+                    }
+                }
+            }
+
+            // Gap connections
+            if (document.getElementById('showGapConnections').checked) {
+                const n = parseInt(document.getElementById('gapSize').value);
+                const gap = 2 * n;
+
+                moduli.forEach(M => {
+                    const ringPoints = points.filter(p => p.M === M);
+                    
+                    ringPoints.forEach(p1 => {
+                        const r2 = (p1.r + gap) % M;
+                        const p2 = ringPoints.find(p => p.r === r2);
+                        
+                        if (p2 && p1.isCoprime && p2.isCoprime) {
+                            connections.push({ p1, p2, type: 'gap', gap });
+                        }
+                    });
+                });
+            }
+
+            // r-to-r+M connections
+            if (document.getElementById('showRtoRplusM').checked) {
+                for (let i = 0; i < moduli.length - 1; i++) {
+                    const M1 = moduli[i];
+                    const M2 = moduli[i + 1];
+                    
+                    for (let r = 0; r < M1; r++) {
+                        const p1 = points.find(p => p.M === M1 && p.r === r);
+                        const r2 = (r + M1) % M2;
+                        const p2 = points.find(p => p.M === M2 && p.r === r2);
+                        
+                        if (p1 && p2) {
+                            connections.push({ p1, p2, type: 'rtorplusm' });
+                        }
+                    }
+                }
+            }
+        }
+
+        // Get point color
+        function getPointColor(point) {
+            const scheme = document.getElementById('colorScheme').value;
             
-            // Call the existing initControls and draw functions here
-            // initControls();
-            // draw();
+            if (scheme === 'coprime') {
+                return point.isCoprime ? '#4a9eff' : '#ff4a4a';
+            } else if (scheme === 'gcd') {
+                const hue = (point.g * 40) % 360;
+                return `hsl(${hue}, 70%, 60%)`;
+            } else if (scheme === 'modulus') {
+                const hue = (point.M * 10) % 360;
+                return `hsl(${hue}, 70%, 60%)`;
+            } else if (scheme === 'rainbow') {
+                const hue = (point.angle / (2 * Math.PI)) * 360;
+                return `hsl(${hue}, 70%, 60%)`;
+            }
+        }
+
+        // Get connection color
+        function getConnectionColor(conn) {
+            if (conn.type === 'rtor') return 'rgba(74, 158, 255, 0.3)';
+            if (conn.type === 'gap') return 'rgba(255, 74, 74, 0.3)';
+            if (conn.type === 'rtorplusm') return 'rgba(74, 255, 158, 0.3)';
+        }
+
+        // Transform coordinates
+        function transform(x, y) {
+            return {
+                x: (x - canvas.width / 2) * scale + canvas.width / 2 + offsetX,
+                y: (y - canvas.height / 2) * scale + canvas.height / 2 + offsetY
+            };
+        }
+
+        function inverseTransform(x, y) {
+            return {
+                x: (x - offsetX - canvas.width / 2) / scale + canvas.width / 2,
+                y: (y - offsetY - canvas.height / 2) / scale + canvas.height / 2
+            };
+        }
+
+        // Render visualization
+        function render() {
+            generatePoints();
+            generateConnections();
+            updateStatistics();
+            updateLegend();
+            draw();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw connections
+            connections.forEach(conn => {
+                const p1 = transform(conn.p1.x, conn.p1.y);
+                const p2 = transform(conn.p2.x, conn.p2.y);
+                
+                ctx.beginPath();
+                ctx.moveTo(p1.x, p1.y);
+                ctx.lineTo(p2.x, p2.y);
+                ctx.strokeStyle = getConnectionColor(conn);
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            });
+
+            // Draw points
+            const pointSize = parseInt(document.getElementById('pointSize').value);
+            const coprimeOnly = document.getElementById('coprimeOnly').checked;
+            
+            points.forEach(point => {
+                if (coprimeOnly && !point.isCoprime) return;
+                
+                const p = transform(point.x, point.y);
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, pointSize, 0, 2 * Math.PI);
+                ctx.fillStyle = getPointColor(point);
+                ctx.fill();
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 0.5;
+                ctx.stroke();
+            });
+
+            // Draw labels
+            if (document.getElementById('showLabels').checked) {
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '10px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                points.forEach(point => {
+                    if (coprimeOnly && !point.isCoprime) return;
+                    
+                    const p = transform(point.x, point.y);
+                    const label = getLabel(point);
+                    ctx.fillText(label, p.x, p.y - pointSize - 5);
+                });
+            }
+        }
+
+        // Get label text
+        function getLabel(point) {
+            const mode = document.getElementById('labelMode').value;
+            
+            switch (mode) {
+                case 'residue': return point.r;
+                case 'fraction': return `${point.r}/${point.M}`;
+                case 'gcd': return point.g;
+                case 'channel': return point.channel;
+                case 'degrees': return `${Math.round((point.angle + Math.PI/2) * 180 / Math.PI)}°`;
+                case 'radians': return `${((point.angle + Math.PI/2) / Math.PI).toFixed(2)}π`;
+                case 'formula': return `2π(${point.r})/${point.M}`;
+                case 'position': return `(${point.r},${point.M})`;
+                default: return point.r;
+            }
+        }
+
+        // Update statistics
+        function updateStatistics() {
+            const moduli = getModuli();
+            const totalPoints = points.length;
+            const coprimePoints = points.filter(p => p.isCoprime).length;
+            const totalModuli = moduli.length;
+            const avgDensity = (coprimePoints / totalPoints * 100).toFixed(1);
+            const primeCount = moduli.filter(m => isPrime(m)).length;
+            const compositeCount = totalModuli - primeCount;
+
+            currentStats = {
+                'Total Moduli': totalModuli,
+                'Total Points': totalPoints,
+                'Coprime Points': coprimePoints,
+                'Average Density': `${avgDensity}%`,
+                'Prime Count': primeCount,
+                'Composite Count': compositeCount,
+                'Total Connections': connections.length,
+                'Modulus Range': `${moduli[0]} - ${moduli[moduli.length - 1]}`
+            };
+
+            const grid = document.getElementById('detailsGrid');
+            grid.innerHTML = '';
+            
+            for (const [label, value] of Object.entries(currentStats)) {
+                const item = document.createElement('div');
+                item.className = 'detail-item';
+                item.innerHTML = `
+                    <div class="detail-label">${label}</div>
+                    <div class="detail-value">${value}</div>
+                `;
+                grid.appendChild(item);
+            }
+        }
+
+        // Update legend
+        function updateLegend() {
+            const scheme = document.getElementById('colorScheme').value;
+            const legendContent = document.getElementById('legendContent');
+            legendContent.innerHTML = '';
+
+            if (scheme === 'coprime') {
+                legendContent.innerHTML = `
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #4a9eff;"></div>
+                        <span>Coprime (gcd = 1)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ff4a4a;"></div>
+                        <span>Non-Coprime (gcd > 1)</span>
+                    </div>
+                `;
+            } else if (scheme === 'gcd') {
+                legendContent.innerHTML = '<div style="font-size: 11px; margin-bottom: 8px;">Color by GCD Value</div>';
+                for (let g = 1; g <= 5; g++) {
+                    const hue = (g * 40) % 360;
+                    const color = `hsl(${hue}, 70%, 60%)`;
+                    legendContent.innerHTML += `
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: ${color};"></div>
+                            <span>gcd = ${g}</span>
+                        </div>
+                    `;
+                }
+            } else if (scheme === 'modulus') {
+                legendContent.innerHTML = '<div style="font-size: 11px; margin-bottom: 8px;">Color by Modulus</div>';
+                const moduli = getModuli();
+                const samples = moduli.filter((m, i) => i % Math.max(1, Math.floor(moduli.length / 5)) === 0);
+                samples.forEach(m => {
+                    const hue = (m * 10) % 360;
+                    const color = `hsl(${hue}, 70%, 60%)`;
+                    legendContent.innerHTML += `
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: ${color};"></div>
+                            <span>M = ${m}</span>
+                        </div>
+                    `;
+                });
+            } else if (scheme === 'rainbow') {
+                legendContent.innerHTML = '<div style="font-size: 11px; margin-bottom: 8px;">Color by Angle</div>';
+            }
+
+            // Add connection types
+            if (connections.length > 0) {
+                legendContent.innerHTML += '<hr style="margin: 10px 0; border-color: #444;">';
+                legendContent.innerHTML += '<div style="font-size: 11px; margin-bottom: 8px;">Connections</div>';
+                
+                if (connections.some(c => c.type === 'rtor')) {
+                    legendContent.innerHTML += `
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: rgba(74, 158, 255, 0.5);"></div>
+                            <span>r-to-r (Vertical)</span>
+                        </div>
+                    `;
+                }
+                if (connections.some(c => c.type === 'gap')) {
+                    legendContent.innerHTML += `
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: rgba(255, 74, 74, 0.5);"></div>
+                            <span>Gap Connections</span>
+                        </div>
+                    `;
+                }
+                if (connections.some(c => c.type === 'rtorplusm')) {
+                    legendContent.innerHTML += `
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: rgba(74, 255, 158, 0.5);"></div>
+                            <span>r-to-r+M (Modular)</span>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        // Zoom and pan controls
+        function zoomIn() {
+            scale *= 1.2;
+            draw();
+        }
+
+        function zoomOut() {
+            scale /= 1.2;
+            draw();
+        }
+
+        function resetView() {
+            scale = 1;
+            offsetX = 0;
+            offsetY = 0;
+            draw();
+        }
+
+        // Mouse interaction
+        canvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            lastX = e.clientX;
+            lastY = e.clientY;
         });
-        
-        // ... (rest of the user's existing script, including initControls(), draw(), etc.) ...
-        
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                offsetX += e.clientX - lastX;
+                offsetY += e.clientY - lastY;
+                lastX = e.clientX;
+                lastY = e.clientY;
+                draw();
+            } else {
+                showTooltip(e);
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const zoom = e.deltaY < 0 ? 1.1 : 0.9;
+            scale *= zoom;
+            draw();
+        });
+
+        // Tooltip
+        function showTooltip(e) {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            const invPoint = inverseTransform(mouseX, mouseY);
+            
+            const pointSize = parseInt(document.getElementById('pointSize').value);
+            const nearestPoint = points.find(p => {
+                const dx = p.x - invPoint.x;
+                const dy = p.y - invPoint.y;
+                return Math.sqrt(dx * dx + dy * dy) < pointSize + 5;
+            });
+
+            const tooltip = document.getElementById('tooltip');
+            
+            if (nearestPoint) {
+                const angleDeg = Math.round((nearestPoint.angle + Math.PI/2) * 180 / Math.PI);
+                tooltip.innerHTML = `
+                    <strong>Point Details</strong><br>
+                    Modulus M: ${nearestPoint.M}<br>
+                    Residue r: ${nearestPoint.r}<br>
+                    GCD(r, M): ${nearestPoint.g}<br>
+                    Coprime: ${nearestPoint.isCoprime ? 'Yes' : 'No'}<br>
+                    Channel M': ${nearestPoint.channel}<br>
+                    Angle: ${angleDeg}° (${(nearestPoint.angle + Math.PI/2).toFixed(3)} rad)<br>
+                    Formula: 2π(${nearestPoint.r})/${nearestPoint.M}
+                `;
+                tooltip.style.left = (e.clientX + 10) + 'px';
+                tooltip.style.top = (e.clientY + 10) + 'px';
+                tooltip.style.display = 'block';
+            } else {
+                tooltip.style.display = 'none';
+            }
+        }
+
+        canvas.addEventListener('mouseleave', () => {
+            document.getElementById('tooltip').style.display = 'none';
+        });
+
+        // Preset functions
+        function setPreset(preset) {
+            const startM = document.getElementById('startM');
+            const endM = document.getElementById('endM');
+            
+            switch (preset) {
+                case 'first12':
+                    startM.value = 1;
+                    endM.value = 12;
+                    break;
+                case 'first30':
+                    startM.value = 1;
+                    endM.value = 30;
+                    break;
+                case 'first60':
+                    startM.value = 1;
+                    endM.value = 60;
+                    break;
+                case 'twin':
+                    startM.value = 1;
+                    endM.value = 100;
+                    document.getElementById('showGapConnections').checked = true;
+                    document.getElementById('gapSize').value = 1;
+                    break;
+            }
+            render();
+        }
+
+        function setGap(n) {
+            document.getElementById('gapSize').value = n;
+            document.getElementById('gapValue').textContent = n;
+            document.getElementById('actualGap').textContent = 2 * n;
+            render();
+        }
+
+        // Gap slider update
+        document.getElementById('gapSize').addEventListener('input', (e) => {
+            const n = e.target.value;
+            document.getElementById('gapValue').textContent = n;
+            document.getElementById('actualGap').textContent = 2 * n;
+        });
+
+        // Export function
+        function exportVisualization() {
+            const exportCanvas = document.createElement('canvas');
+            exportCanvas.width = 3840;  // 4K width
+            exportCanvas.height = 2160; // 4K height
+            const exportCtx = exportCanvas.getContext('2d');
+            
+            // Save current canvas state
+            const savedWidth = canvas.width;
+            const savedHeight = canvas.height;
+            const savedScale = scale;
+            const savedOffsetX = offsetX;
+            const savedOffsetY = offsetY;
+            
+            // Set up for export
+            canvas.width = 3840;
+            canvas.height = 2160;
+            scale = 1;
+            offsetX = 0;
+            offsetY = 0;
+            
+            // Regenerate and draw
+            generatePoints();
+            generateConnections();
+            draw();
+            
+            // Copy to export canvas
+            exportCtx.drawImage(canvas, 0, 0);
+            
+            // Add title and subtitle
+            exportCtx.fillStyle = '#ffffff';
+            exportCtx.font = 'bold 60px Arial';
+            exportCtx.textAlign = 'center';
+            const moduli = getModuli();
+            const title = `Multi-Modulus Visualization: M = ${moduli[0]} to ${moduli[moduli.length - 1]}`;
+            exportCtx.fillText(title, exportCanvas.width / 2, 80);
+            
+            exportCtx.font = '40px Arial';
+            const mode = document.getElementById('modeType').value;
+            const subtitle = `Mode: ${mode} | Total Points: ${points.length} | Coprime: ${points.filter(p => p.isCoprime).length}`;
+            exportCtx.fillText(subtitle, exportCanvas.width / 2, 140);
+            
+            // Download
+            exportCanvas.toBlob((blob) => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `multi_modulus_M${moduli[0]}-${moduli[moduli.length - 1]}_${Date.now()}.png`;
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+            
+            // Restore canvas state
+            canvas.width = savedWidth;
+            canvas.height = savedHeight;
+            scale = savedScale;
+            offsetX = savedOffsetX;
+            offsetY = savedOffsetY;
+            draw();
+        }
+
+        // Initial render
+        render();
     </script>
 </body>
 </html>
